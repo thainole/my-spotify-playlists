@@ -1,5 +1,11 @@
 ## Spotify - See my playlists
 
+![Sign In](./public/images/signin.png)
+
+![My playlists](./public/images/my-playlists.png)
+
+![My playlist detail](./public/images/playlist-detail.png)
+
 Run the development server:
 
 ```bash
