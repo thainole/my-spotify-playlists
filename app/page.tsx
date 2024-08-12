@@ -1,8 +1,10 @@
 'use client';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { signIn, signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import UserNotLogged from './components/UserNotLogged';
 
 type Playlist = {
   name: string;
@@ -16,12 +18,15 @@ type PlaylistImage = {
 
 export default function Home() {
   const { data } = useSession();
+  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [hasMorePlaylists, setHasMorePlaylists] = useState(false);
 
   useEffect(() => {
+    if (!data?.token) return;
+
     const fetchPlaylists = async () => {
       try {
         setLoading(true);
@@ -38,7 +43,7 @@ export default function Home() {
         setPlaylists(res.items);
         setHasMorePlaylists(!!res.next);
       } catch {
-        //
+        signOut();
       } finally {
         setLoading(false);
       }
@@ -67,7 +72,7 @@ export default function Home() {
 
   if (data) {
     if (loading) {
-      return <h1>Loading...</h1>;
+      return <h1 className="text-center mt-5">Loading...</h1>;
     } else
       return (
         <section className="flex flex-col items-center justify-center">
@@ -102,11 +107,18 @@ export default function Home() {
 
           {playlists && playlists.length > 0 && (
             <section className="flex flex-col gap-y-7 items-center mx-8 p-8 rounded-[2rem] border-4 border-solid border-white">
-              <h2 className="text-xl mb-4">My Playlists</h2>
-              <div className="flex flex-wrap gap-8 justify-center">
+              <h2 className="text-xl mb-4 text-gray-200">My Playlists</h2>
+              <div className="flex flex-wrap gap-y-12 gap-x-14 justify-center">
                 {playlists.map((playlist) => (
-                  <div key={playlist.id} className="w-28">
-                    <p className="truncate mb-1.5 text-sm">{playlist.name}</p>
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/${playlist.id}`)}
+                    key={playlist.id}
+                    className="w-[120px] hover:scale-[1.15] text-sm hover:text-[15px] opacity-90 hover:text-white text-gray-400 hover:opacity-100 transition-all duration-300 ease-in-out"
+                  >
+                    <p className="truncate hover:opacity-100 mb-1.5 font-sans tracking-widest">
+                      {playlist.name}
+                    </p>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={
@@ -115,9 +127,9 @@ export default function Home() {
                           : 'https://spotiy-playlist-retriever-experimental.vercel.app/_next/static/media/user_img.6db01878.svg'
                       }
                       alt={playlist.name}
-                      className="object-cover w-full h-28"
+                      className="object-cover w-full h-[120px]"
                     />
-                  </div>
+                  </button>
                 ))}
               </div>
               {hasMorePlaylists && (
@@ -133,24 +145,6 @@ export default function Home() {
         </section>
       );
   } else {
-    return (
-      <div className="max-w-[19rem] h-80 rounded-[2rem] border-4 border-solid border-white flex justify-around items-center flex-col flex-nowrap mt-10 ml-10">
-        <Image
-          src={
-            'https://spotiy-playlist-retriever-experimental.vercel.app/_next/static/media/sad_emoji.41405e6f.svg'
-          }
-          width={160}
-          height={150}
-          alt="sad emoji"
-          priority
-        />
-        <button
-          onClick={() => signIn()}
-          className="shadow-primary w-56 h-16 rounded-xl bg-white border-0 text-black text-3xl active:scale-[0.99]"
-        >
-          Sign In
-        </button>
-      </div>
-    );
+    return <UserNotLogged />;
   }
 }
