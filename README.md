@@ -1,6 +1,6 @@
 ## Spotify - See my playlists
 
-![Sign In](./public/images/signin.png)
+![Sign In](./public/images/sign-in.png)
 
 ![My playlists](./public/images/my-playlists.png)
 
