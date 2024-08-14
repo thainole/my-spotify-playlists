@@ -5,16 +5,7 @@ import { signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import UserNotLogged from './components/UserNotLogged';
-
-type Playlist = {
-  name: string;
-  id: string;
-  images: PlaylistImage[];
-};
-
-type PlaylistImage = {
-  url: string;
-};
+import { Playlist } from './types';
 
 export default function Home() {
   const { data } = useSession();
@@ -76,7 +67,7 @@ export default function Home() {
     } else
       return (
         <section className="flex flex-col items-center justify-center">
-          <div className="min-w-[19rem] h-[22rem] rounded-[2rem] border-4 border-solid border-white flex justify-around items-center flex-col flex-nowrap mt-10 mb-16">
+          <div className="min-w-[19rem] h-[22rem] rounded-[2rem] border-4 border-solid border-white flex justify-around items-center flex-col flex-nowrap my-10">
             <div className="mt-8 w-full flex flex-col flex-nowrap justify-around items-center">
               <Image
                 src={
@@ -86,7 +77,7 @@ export default function Home() {
                 width={80}
                 height={80}
                 priority
-                alt="Defualt user image"
+                alt="User avatar"
                 className="rounded-full"
               />
               <p className="text-white font-normal text-xl mt-5 mb-2">
@@ -105,6 +96,13 @@ export default function Home() {
             </p>
           </div>
 
+          <button
+            onClick={() => router.push('/top-artists')}
+            className="mb-10 px-3 py-2 rounded-md border-2 border-solid border-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out"
+          >
+            My Top Artists
+          </button>
+
           {playlists && playlists.length > 0 && (
             <section className="flex flex-col gap-y-7 items-center mx-8 p-8 rounded-[2rem] border-4 border-solid border-white">
               <h2 className="text-xl mb-4 text-gray-200">My Playlists</h2>
@@ -116,7 +114,7 @@ export default function Home() {
                     key={playlist.id}
                     className="w-[120px] hover:scale-[1.15] text-sm hover:text-[15px] opacity-90 hover:text-white text-gray-400 hover:opacity-100 transition-all duration-300 ease-in-out"
                   >
-                    <p className="truncate hover:opacity-100 mb-1.5 font-sans tracking-widest">
+                    <p className="truncate mb-1.5 font-sans tracking-widest">
                       {playlist.name}
                     </p>
                     {/* eslint-disable-next-line @next/next/no-img-element */}

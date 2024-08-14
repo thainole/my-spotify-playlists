@@ -5,37 +5,15 @@ import {
   UserNotLogged,
   PlayIcon,
   PauseIcon,
-  BackIcon,
   Tooltip,
+  SectionContainer,
 } from '../components';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { Nullable, Playlist } from '../types';
 
-type Playlist = BaseItem & {
-  owner: { display_name: string };
-  images: { url: string }[];
-  description?: string;
-  tracks: { items: Track[] };
-};
-
-type BaseItem = {
-  id: string;
-  name: string;
-};
-
-type Track = {
-  track: BaseItem & {
-    preview_url?: Nullable<string>;
-    album: BaseItem;
-    artists: BaseItem[];
-  };
-};
-
-type Nullable<T> = T | null | undefined;
-
-export default function Playlist() {
+export default function PlaylistPage() {
   const { data } = useSession();
   const { playlistId } = useParams();
-  const router = useRouter();
 
   const [loading, setLoading] = useState(false);
   const [playlist, setPlaylist] = useState<null | Playlist>(null);
@@ -97,11 +75,7 @@ export default function Playlist() {
       return (
         <>
           {playlist && (
-            <section className="m-5 px-8 py-4 rounded-[2rem] border-4 border-solid border-white">
-              <button onClick={() => router.back()}>
-                <BackIcon />
-              </button>
-
+            <SectionContainer>
               <>
                 {/* Playlist info */}
                 <div className="w-full flex flex-col items-center justify-center">
@@ -140,13 +114,9 @@ export default function Playlist() {
                       <span>{index + 1}.</span>
                       <div>
                         <p>{track.name}</p>
-                        <div className="flex flex-row gap-x-2">
-                          {track.artists.map((item) => (
-                            <span key={item.id} className="text-sm opacity-75">
-                              {item.name}
-                            </span>
-                          ))}
-                        </div>
+                        <p className="text-sm opacity-75">
+                          {track.artists.map((a) => a.name).join(', ')}
+                        </p>
                         <p className="text-sm opacity-75 italic">
                           {track.album.name}
                         </p>
@@ -183,7 +153,7 @@ export default function Playlist() {
                   </div>
                 ))}
               </>
-            </section>
+            </SectionContainer>
           )}
         </>
       );
